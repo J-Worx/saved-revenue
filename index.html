@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Solar Revenue Recovery Calculator</title>
+<style>
+  :root{
+    --bg:#0f172a; --panel:#1e293b; --panel2:#243449;
+    --text:#e2e8f0; --muted:#94a3b8; --line:#334155;
+    --accent:#f59e0b; --accent2:#38bdf8; --good:#22c55e;
+    --radius:16px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:radial-gradient(1200px 600px at 50% -10%,#1b2942,var(--bg));
+    color:var(--text);min-height:100vh;padding:32px 16px;line-height:1.5;
+  }
+  .wrap{max-width:960px;margin:0 auto}
+  header{text-align:center;margin-bottom:32px}
+  header h1{font-size:clamp(24px,4vw,36px);font-weight:800;letter-spacing:-.02em}
+  header p{color:var(--muted);margin-top:8px;font-size:15px}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+  @media(max-width:760px){.grid{grid-template-columns:1fr}}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:24px}
+  .card h2{font-size:14px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:20px}
+  .field{margin-bottom:26px}
+  .field:last-child{margin-bottom:0}
+  .field label{display:flex;justify-content:space-between;align-items:baseline;font-size:14px;margin-bottom:10px}
+  .field label .val{font-weight:700;color:var(--accent);font-size:16px}
+  input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:6px;border-radius:99px;background:var(--panel2);outline:none}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:22px;height:22px;border-radius:50%;background:var(--accent);cursor:pointer;border:3px solid #fff2;box-shadow:0 2px 8px #0006}
+  input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;background:var(--accent);cursor:pointer;border:3px solid #fff2}
+  .rangehint{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-top:6px}
+  .results .row{display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-bottom:1px dashed var(--line)}
+  .results .row:last-child{border-bottom:none}
+  .results .row span{color:var(--muted);font-size:14px}
+  .results .row b{font-size:16px;font-weight:700}
+  .headline{background:linear-gradient(135deg,#0e3a2e,#0e2e3a);border:1px solid #14532d;border-radius:var(--radius);padding:22px;margin-top:20px;text-align:center}
+  .headline .lbl{font-size:13px;text-transform:uppercase;letter-spacing:.08em;color:#86efac}
+  .headline .big{font-size:clamp(30px,6vw,44px);font-weight:800;color:var(--good);margin-top:6px}
+  .headline .sub{color:var(--muted);font-size:13px;margin-top:6px}
+  .assump{font-size:12px;color:var(--muted);margin-top:24px;text-align:center;line-height:1.7}
+  .assump code{background:var(--panel);padding:2px 6px;border-radius:6px;color:var(--accent2)}
+  footer{text-align:center;color:var(--muted);font-size:12px;margin-top:32px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Solar Revenue Recovery Calculator</h1>
+    <p>See how recovering fall-off deals with an automated follow-up workflow adds revenue every month.</p>
+  </header>
+
+  <div class="grid">
+    <!-- INPUTS -->
+    <div class="card">
+      <h2>Your Numbers</h2>
+
+      <div class="field">
+        <label>Average cost of a solar build
+          <span class="val" id="costVal">$25,000</span></label>
+        <input type="range" id="cost" min="5000" max="80000" step="500" value="25000">
+        <div class="rangehint"><span>$5k</span><span>$80k</span></div>
+      </div>
+
+      <div class="field">
+        <label>Units sold per month
+          <span class="val" id="unitsVal">40</span></label>
+        <input type="range" id="units" min="1" max="300" step="1" value="40">
+        <div class="rangehint"><span>1</span><span>300</span></div>
+      </div>
+
+      <div class="field">
+        <label>% that fall off before install
+          <span class="val" id="falloffVal">20%</span></label>
+        <input type="range" id="falloff" min="0" max="60" step="1" value="20">
+        <div class="rangehint"><span>0%</span><span>60%</span></div>
+      </div>
+    </div>
+
+    <!-- RESULTS -->
+    <div class="card">
+      <h2>Monthly Impact</h2>
+      <div class="results">
+        <div class="row"><span>Units falling off</span><b id="rFall">8</b></div>
+        <div class="row"><span>Units recovered (65%)</span><b id="rRecover">5.2</b></div>
+        <div class="row"><span>Total units installed</span><b id="rInstalled">37.2</b></div>
+        <div class="row"><span>Total installed revenue</span><b id="rTotalRev">$930,000</b></div>
+        <div class="row"><span>Commission paid (3%)</span><b id="rComm">$27,900</b></div>
+      </div>
+      <div class="headline">
+        <div class="lbl">Revenue added per month</div>
+        <div class="big" id="rAdded">$130,000</div>
+        <div class="sub" id="rAddedSub">from 5.2 recovered installs</div>
+      </div>
+    </div>
+  </div>
+
+  <p class="assump">
+    Assumptions: an automated customer follow-up workflow recovers <code>65%</code> of deals that would otherwise fall off before install.
+    Commission is <code>3%</code> of all installed revenue. Figures are per month.
+  </p>
+
+  <footer>Adjust the sliders to model your own numbers. &middot; Built as a static page for GitHub Pages.</footer>
+</div>
+
+<script>
+  const RECOVERY_RATE = 0.65;   // % of fall-off deals saved by follow-ups
+  const COMMISSION_RATE = 0.03; // 3% of all installed revenue
+
+  const cost = document.getElementById('cost');
+  const units = document.getElementById('units');
+  const falloff = document.getElementById('falloff');
+
+  const fmt$ = n => '$' + Math.round(n).toLocaleString('en-US');
+  const fmtN = n => (Math.round(n*10)/10).toLocaleString('en-US');
+
+  function calc(){
+    const avgCost = +cost.value;
+    const unitsSold = +units.value;
+    const falloffPct = +falloff.value/100;
+
+    const fallUnits = unitsSold * falloffPct;
+    const recovered = fallUnits * RECOVERY_RATE;
+    const installed = (unitsSold - fallUnits) + recovered;
+
+    const totalRev = installed * avgCost;
+    const commission = totalRev * COMMISSION_RATE;
+    const revenueAdded = recovered * avgCost;
+
+    // labels
+    document.getElementById('costVal').textContent = fmt$(avgCost);
+    document.getElementById('unitsVal').textContent = unitsSold;
+    document.getElementById('falloffVal').textContent = (falloffPct*100).toFixed(0)+'%';
+
+    // results
+    document.getElementById('rFall').textContent = fmtN(fallUnits);
+    document.getElementById('rRecover').textContent = fmtN(recovered);
+    document.getElementById('rInstalled').textContent = fmtN(installed);
+    document.getElementById('rTotalRev').textContent = fmt$(totalRev);
+    document.getElementById('rComm').textContent = fmt$(commission);
+    document.getElementById('rAdded').textContent = fmt$(revenueAdded);
+    document.getElementById('rAddedSub').textContent = 'from ' + fmtN(recovered) + ' recovered installs';
+  }
+
+  [cost, units, falloff].forEach(el => el.addEventListener('input', calc));
+  calc();
+</script>
+</body>
+</html>
