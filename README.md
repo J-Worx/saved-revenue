@@ -6,8 +6,8 @@ customer follow-up workflow can add by recovering deals that fall off before ins
 ## Inputs (sliders)
 
 1. **Average cost of a solar build** ($5k–$80k)
-2. **Units sold per month** (1–300)
-3. **% that fall off before install** (0–60%)
+2. **Units sold per month** (1–500)
+3. **% that fall off before install** (20–60%)
 
 ## How it calculates
 
